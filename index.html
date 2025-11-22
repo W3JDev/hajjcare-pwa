@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#3498DB">
+    <title>HajjCare - Your Umrah & Hajj Companion</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            max-width: 480px;
+            margin: 0 auto;
+            padding-bottom: 70px;
+        }
+        .header {
+            background: linear-gradient(135deg, #3498DB 0%, #2ECC71 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container { padding: 15px; }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .feature-card:active { transform: scale(0.95); }
+        .icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-center;
+            font-size: 24px;
+        }
+        .btn {
+            background: #3498DB;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-success { background: #2ECC71; }
+        .btn-danger { background: #E74C3C; }
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #666;
+        }
+        .nav-item.active { color: #3498DB; }
+        .nav-icon { font-size: 24px; display: block; margin-bottom: 5px; }
+        .hidden { display: none; }
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2ECC71;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-50%) translateY(-100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        .health-stat {
+            display: flex;
+            justify-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .health-stat:last-child { border-bottom: none; }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            min-height: 100px;
+        }
+        .phrase-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .phrase-item:active { background: #e9ecef; }
+        .arabic { font-family: 'Amiri', 'Cairo', serif; direction: rtl; color: #3498DB; font-size: 18px; }
+        .sos-button {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: #E74C3C;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            border: 10px solid #fff;
+            box-shadow: 0 10px 30px rgba(231,76,60,0.5);
+            margin: 50px auto;
+            display: flex;
+            align-items: center;
+            justify-center;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen">
+        <div class="header">
+            <h1>🤲 As-salamu alaykum</h1>
+            <p>Welcome to HajjCare</p>
+        </div>
+        <div class="container">
+            <div class="grid">
+                <div class="feature-card" onclick="showScreen('translateScreen')">
+                    <div class="icon" style="background: #3498DB;">🗣️</div>
+                    <h3>Translation</h3>
+                    <p style="color: #666; font-size: 14px;">Voice & Camera</p>
+                </div>
+                <div class="feature-card" onclick="showScreen('healthScreen')">
+                    <div class="icon" style="background: #2ECC71;">💊</div>
+                    <h3>Health</h3>
+                    <p style="color: #666; font-size: 14px;">Track vitals</p>
+                </div>
+                <div class="feature-card" onclick="showScreen('mapScreen')">
+                    <div class="icon" style="background: #9B59B6;">🗺️</div>
+                    <h3>Navigation</h3>
+                    <p style="color: #666; font-size: 14px;">Find holy sites</p>
+                </div>
+                <div class="feature-card" onclick="showScreen('sosScreen')">
+                    <div class="icon" style="background: #E74C3C;">🚨</div>
+                    <h3>Emergency</h3>
+                    <p style="color: #666; font-size: 14px;">SOS Help</p>
+                </div>
+                <div class="feature-card" onclick="showScreen('phrasesScreen')">
+                    <div class="icon" style="background: #F39C12;">📖</div>
+                    <h3>Phrases</h3>
+                    <p style="color: #666; font-size: 14px;">Medical Arabic</p>
+                </div>
+                <div class="feature-card" onclick="showScreen('prayerScreen')">
+                    <div class="icon" style="background: #16A085;">🧭</div>
+                    <h3>Prayer</h3>
+                    <p style="color: #666; font-size: 14px;">Times & Qibla</p>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Today's Health</h3>
+                <div class="health-stat">
+                    <span>Energy Level</span>
+                    <span style="color: #2ECC71; font-weight: bold;">Good ✓</span>
+                </div>
+                <div class="health-stat">
+                    <span>Medications</span>
+                    <span style="color: #F39C12; font-weight: bold;">2 pending</span>
+                </div>
+                <div class="health-stat">
+                    <span>Water Intake</span>
+                    <span style="color: #3498DB; font-weight: bold;">4/8 glasses</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translation Screen -->
+    <div id="translateScreen" class="screen hidden">
+        <div class="header">
+            <h1>🗣️ Translation</h1>
+        </div>
+        <div class="container">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="color: #666; font-size: 14px;">From</div>
+                        <div style="font-weight: bold;">English</div>
+                    </div>
+                    <div style="font-size: 24px;">⇄</div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="color: #666; font-size: 14px;">To</div>
+                        <div style="font-weight: bold;">Arabic</div>
+                    </div>
+                </div>
+                <textarea placeholder="Type or speak to translate..."></textarea>
+                <div style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                    <p class="arabic">...الترجمة ستظهر هنا</p>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <button class="btn" onclick="showToast('🎤 Voice translation activated')">🎤 Voice</button>
+                <button class="btn btn-success" onclick="showToast('📷 Camera translation ready')">📷 Camera</button>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Quick Phrases</h3>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>Where is the bathroom?</div>
+                    <div class="arabic">أين الحمام؟</div>
+                </div>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>I need help</div>
+                    <div class="arabic">أحتاج مساعدة</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Screen -->
+    <div id="healthScreen" class="screen hidden">
+        <div class="header">
+            <h1>💊 Health Tracker</h1>
+        </div>
+        <div class="container">
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Medications</h3>
+                <div class="health-stat">
+                    <span>🕐 Morning - Aspirin 100mg</span>
+                    <input type="checkbox" style="width: 24px; height: 24px;">
+                </div>
+                <div class="health-stat">
+                    <span>🕐 Evening - Vitamin D</span>
+                    <input type="checkbox" style="width: 24px; height: 24px;">
+                </div>
+                <button class="btn" onclick="showToast('✅ Medication reminder added')">+ Add Medication</button>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Energy Level</h3>
+                <input type="range" min="0" max="100" value="70" style="width: 100%;" onchange="showToast('Energy level updated')">
+                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 14px; color: #666;">
+                    <span>Low</span>
+                    <span>Medium</span>
+                    <span>High</span>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Water Intake</h3>
+                <div style="font-size: 48px; text-align: center; color: #3498DB;">💧 4/8</div>
+                <button class="btn btn-success" onclick="showToast('💧 Water logged!')">+ Add Glass</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map Screen -->
+    <div id="mapScreen" class="screen hidden">
+        <div class="header">
+            <h1>🗺️ Navigation</h1>
+        </div>
+        <div class="container">
+            <div class="card" style="height: 300px; background: #e8f4f8; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                <div style="font-size: 64px; margin-bottom: 20px;">🕋</div>
+                <h2>Masjid al-Haram</h2>
+                <p style="color: #666;">📍 2.5 km away</p>
+                <button class="btn" style="margin-top: 20px; max-width: 200px;" onclick="showToast('🗺️ Navigation started')">Get Directions</button>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Nearby Holy Sites</h3>
+                <div class="phrase-item">
+                    <div style="font-weight: bold;">🕋 Kaaba</div>
+                    <div style="color: #666; font-size: 14px;">2.5 km • 5 min drive</div>
+                </div>
+                <div class="phrase-item">
+                    <div style="font-weight: bold;">🏔️ Mount Arafat</div>
+                    <div style="color: #666; font-size: 14px;">20 km • 25 min drive</div>
+                </div>
+                <div class="phrase-item">
+                    <div style="font-weight: bold;">🏛️ Mina</div>
+                    <div style="color: #666; font-size: 14px;">8 km • 15 min drive</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOS Screen -->
+    <div id="sosScreen" class="screen hidden">
+        <div class="header" style="background: #E74C3C;">
+            <h1>🚨 Emergency SOS</h1>
+        </div>
+        <div class="container">
+            <div class="sos-button" onclick="showToast('🚨 Emergency services contacted!')">
+                SOS<br>HELP
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px; color: #E74C3C;">Emergency Contacts</h3>
+                <button class="btn btn-danger" onclick="showToast('☎️ Calling emergency...')">
+                    📞 Emergency Services: 997
+                </button>
+                <button class="btn btn-danger" onclick="showToast('☎️ Calling hospital...')">
+                    🏥 Nearest Hospital
+                </button>
+                <button class="btn btn-danger" onclick="showToast('☎️ Calling family...')">
+                    👨‍👩‍👧 Family Contact
+                </button>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 10px;">Your Medical Info</h3>
+                <p style="color: #666; line-height: 1.6;">
+                    Blood Type: A+<br>
+                    Allergies: None<br>
+                    Condition: Cancer patient<br>
+                    Current Location: Makkah
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phrases Screen -->
+    <div id="phrasesScreen" class="screen hidden">
+        <div class="header">
+            <h1>📖 Medical Phrases</h1>
+        </div>
+        <div class="container">
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Pain & Symptoms</h3>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>I have a headache</div>
+                    <div class="arabic">عندي صداع</div>
+                </div>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>I feel dizzy</div>
+                    <div class="arabic">أشعر بالدوار</div>
+                </div>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>I'm in pain</div>
+                    <div class="arabic">أنا في ألم</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">At the Hospital</h3>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>I need a doctor</div>
+                    <div class="arabic">أحتاج طبيب</div>
+                </div>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>Where is the hospital?</div>
+                    <div class="arabic">أين المستشفى؟</div>
+                </div>
+                <div class="phrase-item" onclick="showToast('Phrase copied!')">
+                    <div>I'm a cancer patient</div>
+                    <div class="arabic">أنا مريض سرطان</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prayer Screen -->
+    <div id="prayerScreen" class="screen hidden">
+        <div class="header">
+            <h1>🧭 Prayer Times</h1>
+        </div>
+        <div class="container">
+            <div class="card" style="text-align: center;">
+                <div style="font-size: 64px; margin-bottom: 10px;">🧭</div>
+                <h2>Qibla Direction</h2>
+                <p style="color: #666;">Tap to activate compass</p>
+                <button class="btn" onclick="showToast('🧭 Compass activated')">Find Qibla</button>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">Prayer Times (Makkah)</h3>
+                <div class="health-stat">
+                    <span>🌅 Fajr</span>
+                    <span style="font-weight: bold;">05:30 AM</span>
+                </div>
+                <div class="health-stat">
+                    <span>☀️ Dhuhr</span>
+                    <span style="font-weight: bold;">12:15 PM</span>
+                </div>
+                <div class="health-stat">
+                    <span>🌤️ Asr</span>
+                    <span style="font-weight: bold;">03:45 PM</span>
+                </div>
+                <div class="health-stat">
+                    <span>🌆 Maghrib</span>
+                    <span style="font-weight: bold;">06:20 PM</span>
+                </div>
+                <div class="health-stat">
+                    <span>🌙 Isha</span>
+                    <span style="font-weight: bold;">07:50 PM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- More Screen -->
+    <div id="moreScreen" class="screen hidden">
+        <div class="header">
+            <h1>⚙️ Settings</h1>
+        </div>
+        <div class="container">
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">App Settings</h3>
+                <div class="phrase-item">
+                    <div>🌐 Language</div>
+                    <div style="color: #666; font-size: 14px;">English</div>
+                </div>
+                <div class="phrase-item">
+                    <div>🔔 Notifications</div>
+                    <div style="color: #666; font-size: 14px;">Enabled</div>
+                </div>
+                <div class="phrase-item">
+                    <div>♿ Accessibility</div>
+                    <div style="color: #666; font-size: 14px;">High Contrast</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom: 15px;">About</h3>
+                <p style="color: #666; line-height: 1.6;">
+                    <strong>HajjCare v1.0</strong><br>
+                    Your personal health and language companion for Umrah & Hajj.<br><br>
+                    Made with ❤️ for pilgrims
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="nav">
+        <div class="nav-item active" onclick="showScreen('homeScreen')">
+            <span class="nav-icon">🏠</span>
+            Home
+        </div>
+        <div class="nav-item" onclick="showScreen('translateScreen')">
+            <span class="nav-icon">🗣️</span>
+            Translate
+        </div>
+        <div class="nav-item" onclick="showScreen('healthScreen')">
+            <span class="nav-icon">💊</span>
+            Health
+        </div>
+        <div class="nav-item" onclick="showScreen('mapScreen')">
+            <span class="nav-icon">🗺️</span>
+            Map
+        </div>
+        <div class="nav-item" onclick="showScreen('moreScreen')">
+            <span class="nav-icon">⚙️</span>
+            More
+        </div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navMap = {
+                'homeScreen': 0,
+                'translateScreen': 1,
+                'healthScreen': 2,
+                'mapScreen': 3,
+                'moreScreen': 4
+            };
+            if (navMap[screenId] !== undefined) {
+                document.querySelectorAll('.nav-item')[navMap[screenId]].classList.add('active');
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Install PWA prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            setTimeout(() => {
+                if (confirm('Install HajjCare app on your home screen?')) {
+                    deferredPrompt.prompt();
+                }
+            }, 3000);
+        });
+
+        // Service Worker for offline
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
